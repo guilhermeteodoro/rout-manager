@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  origin_id: 1
+  destination: 1
+  distance: 
+
+two:
+  origin_id: 1
+  destination: 1
+  distance: 
