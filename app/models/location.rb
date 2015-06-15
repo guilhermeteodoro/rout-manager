@@ -1,6 +1,8 @@
 class Location < ActiveRecord::Base
-  has_many :routes
+  belongs_to :map
+  has_many :routes, foreign_key: :origin_id
   has_many :destinations, through: :routes
 
-  validates :name, presence: true
+  validates_presence_of :name
+  validates_uniqueness_of :name, scope: :map_id
 end
