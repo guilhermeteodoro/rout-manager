@@ -12,4 +12,7 @@ describe MapsController do
       expect(response).to have_http_status(:created)
     end
   end
+
+  describe '#determine' do
+  end
 end
