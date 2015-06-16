@@ -1,3 +1,7 @@
 Rails.application.routes.draw do
-  resources :maps, only: [:index, :show, :create, :update, :destroy]
+  resources :maps, except: [:new, :edit] do
+    member do
+      post :determine
+    end
+  end
 end

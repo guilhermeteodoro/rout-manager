@@ -5,7 +5,7 @@ describe Route do
     expect(build :route).to be_valid
   end
 
-  it 'has a distance greater than or equal 1' do
+  it 'has a distance greater than or equal to 1' do
     expect(build :route, distance: 0).to be_invalid
     expect(build :route, distance: 1).to be_valid
   end
