@@ -13,10 +13,10 @@ class MapsController < ApplicationController
 
   def create
     map = Map.new(name: params[:name])
-    map.routes = load_routes_from_params
+    map.routes ||= load_routes_from_params
 
     if map.save
-      render json: { message: 'Map created successfuly' }
+      render json: { message: 'Map created successfuly' }, status: 201
     else
       render json: { error: map.errors.full_messages }
     end
@@ -43,9 +43,12 @@ class MapsController < ApplicationController
     end
   end
 
+  def determine
+  end
+
   private
   def load_routes_from_params
-    return unless params[:routes]
+    return unless params[:routes] && params[:routes].kind_of?(Array)
 
     params[:routes].map do |route|
       Route.new(origin: route[:origin], destination: route[:destination], distance: route[:distance])
