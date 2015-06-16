@@ -5,13 +5,12 @@ describe Route do
     expect(build :route).to be_valid
   end
 
-  it 'has a distance bigger than 0' do
+  it 'has a distance greater than or equal to 1' do
     expect(build :route, distance: 0).to be_invalid
+    expect(build :route, distance: 1).to be_valid
   end
 
-  it 'can\'t route to the same location' do
-    location = build(:location)
-
-    expect(build :route, origin: location, destination: location).to be_invalid
+  it 'always has a map' do
+    expect(build :route, map: nil).to be_invalid
   end
 end

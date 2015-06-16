@@ -1,9 +1,10 @@
-map = FactoryGirl.build(:map)
+locations = %w(A B C D E F)
 
 FactoryGirl.define do
   factory :route do
-    origin { build(:location, map: map) }
-    destination { build(:location, map: map) }
+    origin { locations.sample }
+    destination { locations.sample }
     distance { rand(1..100.0) }
+    map { build(:map) }
   end
 end
