@@ -44,6 +44,13 @@ class MapsController < ApplicationController
   end
 
   def determine
+    map = Map.find_by_name(params[:id])
+
+    return render json: { error: 'Map not found' }, status: 404 unless map
+
+    best_route, distance = map.to_graph.shortest_path(params[:origin], params[:destination])
+
+    render json: { message: "Shortest path is #{ best_route.join(' ') } with #{ distance }km" }
   end
 
   private
