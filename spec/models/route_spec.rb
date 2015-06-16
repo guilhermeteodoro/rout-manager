@@ -9,9 +9,9 @@ describe Route do
     expect(build :route, distance: 0).to be_invalid
   end
 
-  it 'can\'t route to the same location' do
-    location = build(:location)
+  # it 'can\'t route to the same location' do
+  #   location = build(:location)
 
-    expect(build :route, origin: location, destination: location).to be_invalid
-  end
+  #   expect(build :route, origin: location, destination: location).to be_invalid
+  # end
 end
