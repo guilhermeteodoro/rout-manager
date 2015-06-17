@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :maps, except: [:new, :edit] do
     member do
-      post :determine
+      post :best_path
     end
   end
 end

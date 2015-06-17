@@ -13,6 +13,6 @@ describe MapsController do
     end
   end
 
-  describe '#determine' do
+  describe '#best_path' do
   end
 end

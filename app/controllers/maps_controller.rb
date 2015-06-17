@@ -1,8 +1,9 @@
 class MapsController < ApplicationController
+  before_action :set_map, only: [:show, :update, :destroy, :best_path]
   respond_to :json
 
   def index
-    render json: { maps: Map.all }
+    render json: Map.all
   end
 
   def show
@@ -43,7 +44,7 @@ class MapsController < ApplicationController
     end
   end
 
-  def determine
+  def best_path
     map = Map.find_by_name(params[:id])
 
     return render json: { error: 'Map not found' }, status: 404 unless map
@@ -54,6 +55,10 @@ class MapsController < ApplicationController
   end
 
   private
+  def set_map
+    @map = Map.find_by_name(params[:id])
+  end
+
   def load_routes_from_params
     return unless params[:routes] && params[:routes].kind_of?(Array)
 
