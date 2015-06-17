@@ -6,6 +6,7 @@ gem 'sqlite3', '1.3.10'
 gem 'uglifier', '2.7.1'
 gem 'jquery-rails', '3.1.2'
 gem 'responders', '1.1.2'
+gem 'pry'
 
 gem 'spring', '1.3.6', group: :development
 

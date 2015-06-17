@@ -1,62 +1,56 @@
 class MapsController < ApplicationController
-  before_action :set_map, only: [:show, :update, :destroy, :best_path]
-  respond_to :json
+  before_action :set_map, only: [:show, :update, :destroy, :best_route]
 
   def index
-    render json: Map.all
+    @maps = Map.all
+
+    render json: @maps
   end
 
   def show
-    map = Map.find_by_name(params[:id])
-
-    render json: { name: map.name, routes: map.routes }
+    render json: @map
   end
 
   def create
-    map = Map.new(name: params[:name])
+    map = Map.new(map_params)
     map.routes ||= load_routes_from_params
 
     if map.save
-      render json: { message: 'Map created successfuly' }, status: 201
+      render json: map, status: :created, location: map
     else
-      render json: { error: map.errors.full_messages }
+      render json: map.errors, status: :unprocessable_entity
     end
   end
 
   def update
-    map = Map.find_by_name(params[:id])
-    map.routes = load_routes_from_params
-
-    if map.save
-      render json: { message: 'Map updated successfuly' }
+    if @map.update(name: params[:name], routes: load_routes_from_params)
+      head :no_content
     else
-      render json: { error: map.errors.full_messages }
+      render json: @map.errors, status: :unprocessable_entity
     end
   end
 
   def destroy
-    map = Map.find_by_name(params[:id])
+    @map.destroy
 
-    if map.destroy
-      render json: { message: 'Map destroyed successfuly' }
-    else
-      render json: { error: map.errors.full_messages }
-    end
+    head :no_content
   end
 
-  def best_path
-    map = Map.find_by_name(params[:id])
-
-    return render json: { error: 'Map not found' }, status: 404 unless map
+  def best_route
+    return render json: { error: 'Map not found' }, status: :not_found unless @map
 
     best_route, distance = map.to_graph.shortest_path(params[:origin], params[:destination])
 
-    render json: { message: "Shortest path is #{ best_route.join(' ') } with #{ distance }km" }
+    render json: { message: "Shortest path is \"#{ best_route.join(' ') }\" with #{ distance }km" }
   end
 
   private
   def set_map
-    @map = Map.find_by_name(params[:id])
+    @map = Map.find_by_name(params[:name])
+  end
+
+  def map_params
+    params.require(:map).permit(:name, { routes: [:origin, :destination, :distance] })
   end
 
   def load_routes_from_params
