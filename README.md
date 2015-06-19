@@ -1,6 +1,7 @@
 # rout-manager
 
-**rout-manager** é um webservice que resolve o melhor caminho (custo menor) entre duas localidades e retorna a rota calculada e seu custo.
+**rout-manager** é um webservice que resolve o melhor caminho (custo menor)
+entre duas localidades e retorna a rota calculada e seu custo.
 
 O web service trabalha com uma interface RESTful, aceita e
 responde somente a entradas objetos **json** e persiste os dados
@@ -43,6 +44,8 @@ rails server
 Um servidor web estará escutando na porta 3000 da máquina local a partir
 deste momento - http://localhost:3000 ou http://0.0.0.0:3000.
 
+## API RESTful
+
 ### Criação do mapa
 
 **Exemplo de requisição:**
@@ -55,7 +58,7 @@ deste momento - http://localhost:3000 ou http://0.0.0.0:3000.
 	{
 		"map": {
 			"name": "SP",
-			"routes": [
+			"paths": [
 				{
 					"distance": 10,
 					"origin": "A",
@@ -91,9 +94,123 @@ deste momento - http://localhost:3000 ou http://0.0.0.0:3000.
 	}
 ```
 
+### Mostrar mapa
+
+**Exemplo de requisição:**
+
+- **GET** [http://0.0.0.0:8080/maps/SP](http://0.0.0.0:8080/maps/SP)
+- **Accept:** application/json
+- **Content-Type:** application/json
+
 **Exemplo de resposta:**
 
-- **201** CREATED
+```json
+	{
+		"name": "SP"
+	}
+```
+
+### Atualização do mapa
+
+**Exemplo de requisição:**
+
+- **PATCH** [http://0.0.0.0:8080/maps/SP](http://0.0.0.0:8080/maps/SP)
+- **Accept:** application/json
+- **Content-Type:** application/json
+
+```json
+	{
+		"map": {
+			"name": "RJ",
+		}
+	}
+```
+
+### Deletar mapa
+
+**Exemplo de requisição:**
+
+- **DELETE** [http://0.0.0.0:8080/maps/SP](http://0.0.0.0:8080/maps/SP)
+- **Accept:** application/json
+- **Content-Type:** application/json
+
+```json
+	{
+		"map": {
+			"name": "RJ",
+		}
+	}
+```
+
+### Mostrar todos os mapas
+
+**Exemplo de requisição:**
+
+- **GET** [http://0.0.0.0:8080/maps/](http://0.0.0.0:8080/maps)
+
+**Exemplo de resposta:**
+
+```json
+	[
+		{
+			"name": "SP",
+			"paths": [
+				{
+					"distance": 10,
+					"origin": "A",
+					"destination": "B"
+				},
+				{
+					"distance": 15,
+					"origin": "B",
+					"destination": "D"
+				},
+				{
+					"distance": 20,
+					"origin": "A",
+					"destination": "C"
+				},
+				{
+					"distance": 30,
+					"origin": "C",
+					"destination": "D"
+				},
+				{
+					"distance": 50,
+					"origin": "B",
+					"destination": "E"
+				},
+				{
+					"distance": 30,
+					"origin": "D",
+					"destination": "E"
+				}
+			]
+		},
+		{
+			"name": "RJ",
+			"paths": [
+				{
+					"distance": 10,
+					"origin": "A",
+					"destination": "B"
+				},
+				{
+					"distance": 15,
+					"origin": "B",
+					"destination": "D"
+				},
+				{
+					"distance": 20,
+					"origin": "A",
+					"destination": "C"
+				}
+			]
+		}
+	]
+```
+
+- **200** OK
 
 ### Menor caminho
 
@@ -103,11 +220,21 @@ deste momento - http://localhost:3000 ou http://0.0.0.0:3000.
 - **Accept:** application/json
 - **Content-Type:** application/json
 
+```json
+	{
+		"map_name": "SP",
+		"origin": "A",
+		"destination": "B",
+		"autonomy": 10,
+		"liter_price": 2.5
+	}
+```
+
 **Exemplo de resposta:**
 
 - **200** OK
 
-```html
+```json
 	{
 		"distance": 25,
 		"cost": 6.25,
