@@ -12,8 +12,7 @@ class MapsController < ApplicationController
   end
 
   def create
-    map = Map.new(map_params)
-    map.routes ||= load_routes_from_params
+    map = Map.new(name: map_params[:name], paths: load_paths_from_params)
 
     if map.save
       render json: map, status: :created, location: map
@@ -23,7 +22,7 @@ class MapsController < ApplicationController
   end
 
   def update
-    if @map.update(name: params[:name], routes: load_routes_from_params)
+    if @map.update(name: params[:name], paths: load_paths_from_params)
       head :no_content
     else
       render json: @map.errors, status: :unprocessable_entity
@@ -36,28 +35,20 @@ class MapsController < ApplicationController
     head :no_content
   end
 
-  def best_route
-    return render json: { error: 'Map not found' }, status: :not_found unless @map
-
-    best_route, distance = map.to_graph.shortest_path(params[:origin], params[:destination])
-
-    render json: { message: "Shortest path is \"#{ best_route.join(' ') }\" with #{ distance }km" }
-  end
-
   private
   def set_map
     @map = Map.find_by_name(params[:name])
   end
 
   def map_params
-    params.require(:map).permit(:name, { routes: [:origin, :destination, :distance] })
+    params.require(:map).permit(:name, { paths: [:origin, :destination, :distance] })
   end
 
-  def load_routes_from_params
-    return unless params[:routes] && params[:routes].kind_of?(Array)
+  def load_paths_from_params
+    return [] unless map_params[:paths]
 
-    params[:routes].map do |route|
-      Route.new(origin: route[:origin], destination: route[:destination], distance: route[:distance])
+    map_params[:paths].map do |path|
+      Path.new(origin: path[:origin], destination: path[:destination], distance: path[:distance])
     end
   end
 end

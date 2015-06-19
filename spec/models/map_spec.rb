@@ -10,4 +10,6 @@ describe Map do
 
     expect(build(:map, name: map.name)).to be_invalid
   end
+
+  it 'has a name with only letters'
 end
