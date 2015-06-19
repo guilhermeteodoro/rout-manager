@@ -10,9 +10,27 @@ describe Path do
     expect(build :path, distance: 1).to be_valid
   end
 
+  it 'has always an upcase origin and destination' do
+    origin = 'oriGin'
+    destination = 'destination'
+
+    path = create(:path, origin: origin, destination: destination)
+
+    expect(path.origin).to eq(origin.upcase)
+    expect(path.destination).to eq(destination.upcase)
+  end
+
   it 'always has a map' do
     expect(build :path, map: nil).to be_invalid
   end
 
-  it 'has an origin different from destination'
+  context 'within the same map' do
+    it 'can have equal paths with different destinations' do
+      path = create :path
+
+      expect(build :path, origin: path.origin, destination: path.destination, map: path.map).to be_valid
+      expect(build :path, origin: path.origin, destination: path.destination, distance: path.distance).to be_valid
+      expect(build :path, origin: path.origin, destination: path.destination, distance: path.distance, map: path.map).to be_invalid
+    end
+  end
 end

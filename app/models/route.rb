@@ -2,8 +2,10 @@ class Route
   include ActiveModel::Model
 
   attr_accessor :map_name, :origin, :destination, :autonomy, :liter_price
+  attr_writer :map
 
-  validates_presence_of :map, :origin, :destination, :autonomy, :liter_price
+  validates_presence_of :origin, :destination, :autonomy, :liter_price
+  validates_presence_of :map, message: 'map not found'
   validates :autonomy, numericality: { greater_than: 0 }
   validates :liter_price, numericality: { greater_than: 0 }
   validate :location_types
