@@ -1,57 +1,120 @@
 # rout-manager
-A webservice to insert maps (locations and the distance in between) and calculate the best route.
 
-### Desafio
+**rout-manager** é um webservice que resolve o melhor caminho (custo menor) entre duas localidades e retorna a rota calculada e seu custo.
 
-Um sistema de entregas visando sempre o menor custo. Para popular sua base de dados o sistema precisa expor um
-webservice que aceite o formato de malha logística (exemplo abaixo), nesta mesma
-requisição o requisitante deverá informar um nome para este mapa. É importante que os
-mapas sejam persistidos para evitar que a cada novo deploy todas as informações
-desapareçam. O formato de malha logística é bastante simples, cada linha mostra uma rota:
-ponto de origem, ponto de destino e distância entre os pontos em quilômetros.
+O web service trabalha com uma interface RESTful, aceita e
+responde somente a entradas objetos **json** e persiste os dados
+utilizando-se das seguintes entidades:
 
->A B 10
-B D 15
-A C 20
-C D 30
-B E 50
-D E 30
+* **Mapa** (map): possui apenas um nome (string).
+* **Caminhos** (path): possui um ponto de origem (string), destino (string) e a
+  distância (double) entre os mesmos.
 
-Com os mapas carregados o requisitante irá procurar o menor valor de entrega e seu caminho,
-para isso ele passará o mapa, nome do ponto de origem, nome do ponto de destino,
-autonomia do caminhão `(km/l)` e o valor do litro do combustível, agora sua tarefa é criar este
-webservice. Um exemplo de entrada seria, mapa SP, origem A, destino D, autonomia 10,
-valor do litro 2,50; a resposta seria a rota A B D com custo de 6,25.
+Após a entrada do mapa e suas estradas no sistema, pode-se pedir
+a solução do menor caminho (o caminho que possui a menor distância)
+entre duas localidades, dado que estas localidades estejam conectadas
+entre si de alguma forma, diretamente ou passando por outras estradas.
 
-Exemplo de chamada:
+Para o cálculo da solução, utiliza-se de uma versão do algoritmo de **Dijkstra**.
+
+## Requerimentos
+
+Clone o projeto e entre no diretório
+
+```bash
+git clone git@github.com:guilhermeteodoro/rout-manager.git
+```
+
+Com o Ruby 2.1.0 instalado na máquina
+
+```bash
+bundle install
+rake db:migrate
+```
+
+## Como utilizar
+
+Inicie o servidor
+
+```bash
+rails server
+```
+
+Um servidor web estará escutando na porta 3000 da máquina local a partir
+deste momento - http://localhost:3000 ou http://0.0.0.0:3000.
+
+### Criação do mapa
+
+**Exemplo de requisição:**
+
+- **POST** [http://0.0.0.0:8080/maps/](http://0.0.0.0:8080/maps/)
+- **Accept:** application/json
+- **Content-Type:** application/json
 
 ```json
-{
-    "name": "SP",
-    "routes": [{
-        "distance": 10,
-        "origin": "A",
-        "destination": "B"
-    }, {
-        "distance": 15,
-        "origin": "B",
-        "destination": "D"
-    }, {
-        "distance": 20,
-        "origin": "A",
-        "destination": "C"
-    }, {
-        "distance": 30,
-        "origin": "C",
-        "destination": "D"
-    }, {
-        "distance": 50,
-        "origin": "B",
-        "destination": "E"
-    }, {
-        "distance": 30,
-        "origin": "D",
-        "destination": "E"
-    }]
-}
+	{ 
+		map: {
+			"name": "SP",
+			"routes": [
+				{
+					"distance": 10,
+					"origin": "A",
+					"destination": "B"
+				},
+				{
+					"distance": 15,
+					"origin": "B",
+					"destination": "D"
+				},
+				{
+					"distance": 20,
+					"origin": "A",
+					"destination": "C"
+				},
+				{
+					"distance": 30,
+					"origin": "C",
+					"destination": "D"
+				},
+				{
+					"distance": 50,
+					"origin": "B",
+					"destination": "E"
+				},
+				{
+					"distance": 30,
+					"origin": "D",
+					"destination": "E"
+				}
+			]
+		}
+	}
+```
+
+**Exemplo de resposta:**
+
+- **201** CREATED
+
+### Menor caminho
+
+**Exemplo de requisição:**
+
+- **GET** [http://0.0.0.0:8080/maps/SP/route/solve/](http://0.0.0.0:8080/maps/SP/route/solve/)
+- **Accept:** application/json
+- **Content-Type:** application/json
+
+**Exemplo de resposta:**
+
+- **200** OK
+
+```html
+	{
+		"distance": 25,
+		"cost": 6.25,
+		"route": [
+			"A",
+			"B",
+			"D"
+		]
+	}
 ```
