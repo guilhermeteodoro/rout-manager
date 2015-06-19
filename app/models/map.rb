@@ -3,7 +3,6 @@ class Map < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
 
-  private
   def to_graph
     Graph.new paths.map{ |path| [path.origin, path.destination, path.distance] }
   end

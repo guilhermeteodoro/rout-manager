@@ -1,6 +1,6 @@
 class RoutesController < ApplicationController
   def solve
-    route = Route.new(routes_params)
+    route = Route.new(route_params)
 
     if route.valid?
       render json: route.solve, status: :created
@@ -10,7 +10,7 @@ class RoutesController < ApplicationController
   end
 
   private
-  def routes_params
-    params.require(:map).permit(:name, :origin, :destination, :autonomy, :liter_price)
+  def route_params
+    params.permit(:map_name, :origin, :destination, :autonomy, :liter_price)
   end
 end
