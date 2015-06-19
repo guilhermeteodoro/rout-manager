@@ -13,23 +13,17 @@
 
 ActiveRecord::Schema.define(version: 20150615021305) do
 
-  create_table "locations", force: true do |t|
-    t.string   "name"
-    t.integer  "map_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "maps", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "routes", force: true do |t|
-    t.integer  "origin_id"
-    t.integer  "destination_id"
+  create_table "paths", force: true do |t|
+    t.string   "origin"
+    t.string   "destination"
     t.float    "distance"
+    t.integer  "map_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -1,15 +1,31 @@
-class Route < ActiveRecord::Base
-  belongs_to :origin, class_name: 'Location'
-  belongs_to :destination, class_name: 'Location'
+class Route
+  include ActiveModel::Model
 
-  validates_presence_of :distance, :origin, :destination
-  validates :distance, numericality: { greater_than: 0 }
-  validate :destination_is_different_from_origin
+  attr_accessor :map_name, :origin, :destination, :autonomy, :liter_price
+  attr_writer :map
+
+  validates_presence_of :origin, :destination, :autonomy, :liter_price
+  validates_presence_of :map, message: 'map not found'
+  validates :autonomy, numericality: { greater_than: 0 }
+  validates :liter_price, numericality: { greater_than: 0 }
+  validate :location_types
+
+  def solve
+    route, distance = map.to_graph.shortest_path(origin, destination)
+
+    {
+      route: route,
+      distance: distance,
+      cost: distance / autonomy * liter_price
+    }
+  end
+
+  def map
+    Map.find_by_name map_name
+  end
 
   private
-  def destination_is_different_from_origin
-    if (origin == destination) || (origin.name == destination.name)
-      errors.add(:destination, 'can\'t be equal to origin')
-    end
+  def location_types
+    origin.is_a?(String) && destination.is_a?(String)
   end
 end

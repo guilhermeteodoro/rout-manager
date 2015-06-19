@@ -2,16 +2,21 @@ require 'rails_helper'
 
 describe Route do
   it 'has a valid factory' do
-    expect(build :route).to be_valid
+    expect(build :path).to be_valid
   end
 
-  it 'has a distance bigger than 0' do
-    expect(build :route, distance: 0).to be_invalid
+  let(:route) { build(:route) }
+
+  describe 'validations' do
+    it { expect(route).to validate_presence_of(:origin) }
+    it { expect(route).to validate_presence_of(:destination) }
+    it { expect(route).to validate_presence_of(:autonomy) }
+    it { expect(route).to validate_presence_of(:liter_price) }
+    it { expect(route).to validate_numericality_of(:autonomy).is_greater_than(0) }
+    it { expect(route).to validate_numericality_of(:liter_price).is_greater_than(0) }
   end
 
-  it 'can\'t route to the same location' do
-    location = build(:location)
-
-    expect(build :route, origin: location, destination: location).to be_invalid
+  it 'returns a hash from solve' do
+    expect(route.solve.class).to eq(Hash)
   end
 end
