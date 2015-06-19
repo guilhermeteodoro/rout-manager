@@ -1,6 +1,6 @@
-class CreateRoutes < ActiveRecord::Migration
+class CreatePaths < ActiveRecord::Migration
   def change
-    create_table :routes do |t|
+    create_table :paths do |t|
       t.string :origin
       t.string :destination
       t.float :distance

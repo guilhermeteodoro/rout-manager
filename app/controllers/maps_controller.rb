@@ -1,64 +1,54 @@
 class MapsController < ApplicationController
-  respond_to :json
+  before_action :set_map, only: [:show, :update, :destroy, :best_route]
 
   def index
-    render json: { maps: Map.all }
+    @maps = Map.all
+
+    render json: @maps
   end
 
   def show
-    map = Map.find_by_name(params[:id])
-
-    render json: { name: map.name, routes: map.routes }
+    render json: @map
   end
 
   def create
-    map = Map.new(name: params[:name])
-    map.routes ||= load_routes_from_params
+    map = Map.new(name: map_params[:name], paths: load_paths_from_params)
 
     if map.save
-      render json: { message: 'Map created successfuly' }, status: 201
+      render json: map, status: :created, location: map
     else
-      render json: { error: map.errors.full_messages }
+      render json: map.errors, status: :unprocessable_entity
     end
   end
 
   def update
-    map = Map.find_by_name(params[:id])
-    map.routes = load_routes_from_params
-
-    if map.save
-      render json: { message: 'Map updated successfuly' }
+    if @map.update(name: params[:name], paths: load_paths_from_params)
+      head :no_content
     else
-      render json: { error: map.errors.full_messages }
+      render json: @map.errors, status: :unprocessable_entity
     end
   end
 
   def destroy
-    map = Map.find_by_name(params[:id])
+    @map.destroy
 
-    if map.destroy
-      render json: { message: 'Map destroyed successfuly' }
-    else
-      render json: { error: map.errors.full_messages }
-    end
-  end
-
-  def determine
-    map = Map.find_by_name(params[:id])
-
-    return render json: { error: 'Map not found' }, status: 404 unless map
-
-    best_route, distance = map.to_graph.shortest_path(params[:origin], params[:destination])
-
-    render json: { message: "Shortest path is #{ best_route.join(' ') } with #{ distance }km" }
+    head :no_content
   end
 
   private
-  def load_routes_from_params
-    return unless params[:routes] && params[:routes].kind_of?(Array)
+  def set_map
+    @map = Map.find_by_name(params[:name])
+  end
 
-    params[:routes].map do |route|
-      Route.new(origin: route[:origin], destination: route[:destination], distance: route[:distance])
+  def map_params
+    params.require(:map).permit(:name, { paths: [:origin, :destination, :distance] })
+  end
+
+  def load_paths_from_params
+    return [] unless map_params[:paths]
+
+    map_params[:paths].map do |path|
+      Path.new(origin: path[:origin], destination: path[:destination], distance: path[:distance])
     end
   end
 end
