@@ -3,10 +3,8 @@ source 'https://rubygems.org'
 gem 'rails', '4.1.4'
 gem 'rails-api', '0.4.0'
 gem 'sqlite3', '1.3.10'
-gem 'uglifier', '2.7.1'
 gem 'jquery-rails', '3.1.2'
-gem 'responders', '1.1.2'
-gem 'pry'
+gem 'active_model_serializers', '0.9.3'
 
 gem 'spring', '1.3.6', group: :development
 

@@ -11,6 +11,7 @@ Bundler.require(*Rails.groups)
 
 module RouteManager
   class Application < Rails::Application
+    config.autoload_paths << Rails.root.join('lib')
     config.api_only = false
   end
 end
